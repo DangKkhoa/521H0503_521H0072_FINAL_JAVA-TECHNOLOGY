@@ -102,7 +102,7 @@
     <div th:insert="/navbar :: navigation"></div>
     <header>
         <div class="container-bar">
-            <div class="greeting"><h1>Welcome, <span th:text="${user.getFullname()}"></span></h1></div>
+            <div class="greeting"><h1>Welcome, <span th:text="${user.getSessionFullname()}"></span></h1></div>
             <div class="logout"><div><a href="/logout" class=""><i class="fa-solid fa-right-from-bracket"></i> Log out</a></div></div>
         </div>
     </header>
@@ -196,7 +196,7 @@
                             </tr>
                         </thead>
 <!--                        <% if(!user.first_login || user.isAdmin) { %>-->
-                        <tbody th:if="${!user.isFirstLogin() || user.isAdmin()}">
+                        <tbody th:if="${user.isAdmin()}">
 <!--                            <% let i = 1 %>-->
 <!--                                <% top5_products.forEach(p => { %>-->
                                     <tr th:each="product : ${top5Products}">

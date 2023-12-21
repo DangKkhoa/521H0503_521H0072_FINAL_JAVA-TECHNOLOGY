@@ -1,6 +1,7 @@
 package com.dkkhoa.possystem.controller;
 import com.dkkhoa.possystem.model.saledetail.SaleDetailRepository;
 import com.dkkhoa.possystem.model.saledetail.TopFiveProducts;
+import com.dkkhoa.possystem.model.users.SessionUser;
 import com.dkkhoa.possystem.model.users.User;
 import com.dkkhoa.possystem.model.users.UserRepository;
 import com.dkkhoa.possystem.model.customers.CustomerRepository;
@@ -31,9 +32,21 @@ public class HomeController {
     @GetMapping("/")
 //    @ResponseBody
     public String homePage(Model model, HttpSession session) {
+        SessionUser user = (SessionUser) session.getAttribute("user");
+
+        if(user == null ) {
+            return "redirect:/login";
+        }
+//        System.out.println(user.toString());
+        System.out.println("Qua trang home roi");
+//        if(user == null) {
+//            System.out.println("nhung khong co session");
+//            return "redirect:/login";
+//        }
         model.addAttribute("page_title", "I just changed the text");
 //        Iterable<Users> users = repo.findAll();
 //        List<Users> user = repo.findById(1);
+        System.out.println("Toi trang homw dong 44 roi");
         long orderQuantity = saleRepo.count();
         int totalRevenue = saleRepo.getTotalRevenue();
         long salespersonQuantity = userRepo.countByIsAdminFalse();
@@ -49,14 +62,14 @@ public class HomeController {
             long quantity =  product.getQuantitySold();
             System.out.println("Product name: " + name + " - " + "Quantity: " + quantity);
         }
-        User user = (User) session.getAttribute("user");
-        System.out.println("Username: " + user.getUsername());
+//        System.out.println("Username: " + user.getUsername());
         model.addAttribute("user", user);
         model.addAttribute("orderQuantity", orderQuantity);
         model.addAttribute("totalRevenue", totalRevenue);
         model.addAttribute("salespersonQuantity", salespersonQuantity);
         model.addAttribute("customerQuantity", customerQuantity);
         model.addAttribute("top5Products", top5Products);
+        System.out.println("Vao toi day luon roi nha, dong 67");
         return "home";
     }
 

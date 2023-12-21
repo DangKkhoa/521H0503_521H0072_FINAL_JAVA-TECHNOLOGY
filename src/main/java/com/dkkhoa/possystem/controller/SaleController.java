@@ -2,6 +2,7 @@ package com.dkkhoa.possystem.controller;
 
 import com.dkkhoa.possystem.model.saledetail.SaleDetailRepository;
 import com.dkkhoa.possystem.model.sales.SaleRepository;
+import com.dkkhoa.possystem.model.users.SessionUser;
 import com.dkkhoa.possystem.model.users.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class SaleController {
     @GetMapping("/sale_history")
     @ResponseBody
     public String sale_history(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        SessionUser user = (SessionUser) session.getAttribute("user");
         List<Object[]> allMonthProfit = saledetailRepo.getAllMonthProfit();
 //        for (Object[] profitEachMonth: allMonthProfit) {
 //            int month = (Integer) profitEachMonth[0];
@@ -47,7 +48,7 @@ public class SaleController {
 //                    return newMap;
 //                })
 //                .collect(Collectors.toList());
-        List<Object[]> allMonthreveue = saleRepo.getMonthlyRevenueByUserId(user.getUserId());
+        List<Object[]> allMonthreveue = saleRepo.getMonthlyRevenueByUserId(user.getId());
         for (Object[] revenueEachMonth: allMonthreveue) {
             int month = (Integer) revenueEachMonth[0];
             long totalRevenue = (Long) revenueEachMonth[1];
@@ -64,7 +65,7 @@ public class SaleController {
     @PostMapping("/sale_history/data")
     @ResponseBody
     public Map<String, Object> send_data(HttpSession session) {
-        User user = (User) session.getAttribute("user");
+        SessionUser user = (SessionUser) session.getAttribute("user");
 
         // If admin, return monthly profit
         if(user.isAdmin()) {
@@ -87,7 +88,7 @@ public class SaleController {
 
         // If not admin, just return monthly revenue
 
-        List<Object[]> allMonthreveue = saleRepo.getMonthlyRevenueByUserId(user.getUserId());
+        List<Object[]> allMonthreveue = saleRepo.getMonthlyRevenueByUserId(user.getId());
         List<Map<String, Object>> monthlyRevenueObject = allMonthreveue.stream()
                 .map(row -> {
                     Map<String, Object> newMap = new LinkedHashMap<>();
