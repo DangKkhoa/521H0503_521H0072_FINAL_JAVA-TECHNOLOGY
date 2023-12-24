@@ -10,11 +10,12 @@ import lombok.NoArgsConstructor;
 public class SessionUser{
     int id;
     String username;
-//    String email;
+    String email;
     String sessionFullname;
     boolean isAdmin;
     String profilePicture;
     boolean firstLogin;
+    String phoneNumber;
 
 
 }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+
+        body {
+            padding: 20px;
+        }
+
+        h2 {
+            color: #007bff; /* Bootstrap primary color */
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        .button-spacing {
+            margin-top: 2px;
+        }
+
+        .button-home {
+            margin-top: 2px;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" integrity="correct-integrity-value" crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <div class="card-body" id="success-box">
+
+            <div class="alert alert-success" role="alert">
+                Profile updated successfully!
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <form action="/profile/update-profile" method="post" enctype="multipart/form-data" class="mt-4">
+                    <div class="picture-profile" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 10px auto; border: 2px solid black">
+                        <img th:src="@{${'/images/profile/' + user.getProfilePicture()}}"  alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%;">
+                    </div>
+                    <div class="form-group">
+                        <label for="profile_picture">Update Avatar:</label>
+                        <input type="file" id="avatar" name="avatar" accept="image/*" class="form-control-file">
+                    </div>
+                    <div class="form-group">
+                        <label for="fullname">Full Name:</label>
+                        <input type="text" id="fullname" name="fullname" class="form-control" th:value="${user.getSessionFullname()}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" class="form-control" th:value="${user.getEmail()}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="username" id="username" name="username" class="form-control" th:value="${user.getUsername()}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" th:value="${user.getPhoneNumber()}" pattern="[0-9]{10}">
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary button-spacing">Update</button>
+
+                    <a href="/" class="btn btn-secondary button-home">Home</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" integrity="correct-integrity-value" crossorigin="anonymous">
+<script>
+    const success_box = document.querySelector('#success-box')
+
+    let sec = 1
+    const interval = setInterval(function() {
+        sec--
+
+        if(sec < 0) {
+            clearInterval(interval)
+            success_box.style.display = 'none'
+            // window.location.href = '/profile'
+        }
+    }, 1000)
+</script>
+</body>
+</html>

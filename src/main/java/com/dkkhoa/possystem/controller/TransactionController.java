@@ -8,6 +8,7 @@ import com.dkkhoa.possystem.model.sales.Sale;
 import com.dkkhoa.possystem.model.sales.SaleService;
 import com.dkkhoa.possystem.model.users.SessionUser;
 import com.dkkhoa.possystem.model.users.User;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.Request;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +42,20 @@ public class TransactionController {
     @Autowired
     private SaleService saleService;
     @GetMapping("")
-    public String transaction(HttpSession session, Model model) {
-
-        if(saleId == null) {
-             saleId = iDGenerator();
-        }
-
+    public String transaction(HttpSession session, Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         SessionUser user = (SessionUser) session.getAttribute("user");
         if(user == null) {
             return "redirect:/login";
         }
 
+        if(saleId == null) {
+            saleId = iDGenerator();
+        }
         Iterable<Product> products = productRepo.findAll();
-        products.forEach(p -> System.out.println(p.getProductName()));
+//        products.forEach(p -> System.out.println(p.getProductName()));
 //        System.out.println(products);
         model.addAttribute("products", products);
         model.addAttribute("user", user);
@@ -76,14 +78,7 @@ public class TransactionController {
         int changeToCustomer = Integer.parseInt(saleData.get("change_to_customer").toString());
         int totalQuantity = Integer.parseInt(saleData.get("total_quantity").toString());
         int totalPrice =Integer.parseInt(saleData.get("total_cost").toString());
-//        System.out.println(products);
-//        System.out.println(saleId);
-//        System.out.println(totalPrice);
-//        System.out.println(totalQuantity);
-//        System.out.println(amountGivenByCustomer);
-//        System.out.println(changeToCustomer);
-//        System.out.println(saleDate);
-//        System.out.println(saleTime);
+
         boolean isAdded = saleService.addSale(saleId, totalQuantity, totalPrice, amountGivenByCustomer, changeToCustomer, user.getId(), null, saleDate, saleTime);
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if(isAdded) {
@@ -91,15 +86,16 @@ public class TransactionController {
                 System.out.println(p);
                 ProductSelected productSelectedDetail = saledetailService.format(p);
                 saledetailService.saledetailAdd(productSelectedDetail, saleId);
-                saleId = null;
             });
 
             response.put("code", 1);
             response.put("message", "Transaction stored successfully");
+            saleId = null;
             return response;
         }
         response.put("code", 0);
         response.put("message", "Error occured. Please try again later");
+        saleId = null;
         return response;
     }
 
@@ -111,8 +107,41 @@ public class TransactionController {
         model.addAttribute("complete", complete);
 
         return "transactionStatus";
+    }
 
+    @GetMapping("/products/{category_name}")
+    private String categorySearch(@PathVariable("category_name") String category_name, HttpSession session, Model model) {
+//        System.out.println(name);
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if(user == null) {
+            return "redirect:/login";
+        }
 
+        if(user.isFirstLogin() && !user.isAdmin()) {
+            return "redirect:/set_password";
+        }
+
+        Iterable<Product> products = productRepo.findProductsByCategory(category_name);
+        model.addAttribute("products", products);
+        model.addAttribute("user", user);
+        model.addAttribute("saleId", saleId);
+        return "transaction";
+    }
+
+    @GetMapping("/search")
+    private String search(@RequestParam(name = "product_name", required = false) String name, HttpSession session, Model model) {
+        System.out.println(name);
+        SessionUser user = (SessionUser) session.getAttribute("user");
+        if(user == null) {
+            return "redirect:/login";
+        }
+
+        Iterable<Product> products = productRepo.findProductsByCategoryOrProductNameContains(name, name);
+        model.addAttribute("products", products);
+        model.addAttribute("user", user);
+        model.addAttribute("saleId", saleId);
+
+        return "transaction";
 
     }
 

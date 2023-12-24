@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salespersons</title>
+    <!-- Include Bootstrap CSS -->
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <!-- <link rel="stylesheet" href="/css/styles.css"> -->
+    <style>
+        .container {
+            margin-top: 20px; /* Add some margin to the top of the container */
+            margin-bottom: 100px;
+        }
+    </style>
+</head>
+<body>
+<div th:insert="/navbar :: navigation"></div>
+<div id="notificationArea" class="fixed-top w-25 m-2"></div> <!-- Notification area -->
+<div class="container mt-5">
+
+
+
+    <h1 class="text-center mb-4">Saleperson management</h1>
+
+
+
+
+    <!-- Add Salesperson Form Modal Trigger Button -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSalespersonModal">
+        Add Salesperson
+    </button>
+
+    <!-- Salesperson List -->
+    <div class="container mt-3">
+
+        <h2 class="my-4">Salespersons (<span id="salesperson-quantity" th:text="${salespersonQuantity}"></span>)</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center align-baseline">
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Full name</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="s: ${salespersons}" th:id="${s.getUserId()}">
+                    <td th:text="${sStat.count}"></td>
+                    <td th:text="${s.getUsername()}"></td>
+                    <td th:text="${s.getEmail()}"><%= s.email %></td>
+                    <td th:text="${s.getFullname()}"><%= s.fullname %></td>
+                    <td th:text="${s.getPhone()}"><%= s.phone %></td>
+                    <td>
+                        <span th:if="${s.isLocked()}">Locked</span>
+                        <span th:if="${!s.isLocked()}">Unlocked</span>
+                    </td>
+                    <td>
+                        <button type="button" th:attr="data-id=${s.getUserId()}, data-name=${s.getFullname()}" class="btn btn-outline-danger btn-delete" data-bs-toggle="modal" data-bs-target="#deleteSalespersonModal">Delete</button>
+                        <button type="button" th:attr="data-id=${s.getUserId()}, data-name=${s.getFullname()}" class="btn btn-outline-info btn-send-link">Send link</button>
+                        <button type="button" th:attr="data-id=${s.getUserId()}, data-name=${s.getFullname()}" class="btn btn-outline-warning btn-lock-unlock" th:if="${s.isLocked()}">Unlock</button>
+                        <button type="button" th:attr="data-id=${s.getUserId()}, data-name=${s.getFullname()}" class="btn btn-outline-warning btn-lock-unlock" th:if="${!s.isLocked()}">Lock</button>
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Add Salperson modal -->
+<div class="modal fade" id="addSalespersonModal" tabindex="-1" aria-labelledby="addSalespersonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addSalespersonModalLabel">Add Salesperson</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addSalespersonForm" method="POST" action="/salespersons/add">
+                    <div class="form-group">
+                        <label for="name">Fullname:</label>
+                        <input type="text" class="form-control" id="name" name="fullname" required>
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="email">Email:</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="username@gmail.com">
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2 add-btn-comfirmed">Add Salesperson</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Delete saleperson modal-->
+<div class="modal fade" id="deleteSalespersonModal" tabindex="-1" aria-labelledby="deleteSalespersonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteSalespersonModalLabel">Delete user</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Delete salesperson <strong id="delete-salesperson-name"></strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" data-id="" id="delete-btn-confirmed" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script>
+    $('.btn-delete').click(e => {
+        const btn = e.target
+        const id = btn.dataset.id
+        const name = btn.dataset.name
+        $('#delete-btn-confirmed').attr('data-id', id)
+        $('#delete-salesperson-name').text(name)
+    })
+    $('#delete-btn-confirmed').click(e => {
+        $('#deleteSalespersonModal').modal('hide')
+        const btn = e.target
+        const salesperson_id = btn.dataset.id
+
+        fetch('http://localhost:8080/salespersons/delete/' + salesperson_id, {
+            method: 'POST'
+        })
+            .then(res => res.json())
+            .then(json => {
+                // console.log(json)
+                if(json.code === 1) {
+                    $(`tr#${salesperson_id}`).remove()
+                    const salesperson_quantity = parseInt($('#salesperson-quantity').text(), 10) - 1
+                    $('#salesperson-quantity').text(salesperson_quantity)
+                }
+                else {
+                    console.log(json.message)
+                    // console.log('Something went wrong')
+                }
+
+            })
+            .catch(err => console.log(err))
+    })
+
+    $('.btn-send-link').click(e => {
+        const btn = e.target
+
+        const salesperson_id = btn.dataset.id
+        // console.log(salesperson_id)
+
+        fetch('http://localhost:8080/salespersons/send_link/' + salesperson_id, {
+            method: 'POST'
+        })
+            .then(res => res.json())
+            .then(json => {
+                if(json.code === 1) {
+                    console.log(json.message)
+                }
+                else {
+                    console.log(json.message)
+                }
+            })
+    })
+
+    $('.btn-lock-unlock').click( e => {
+        const btn = e.target
+
+        console.log(btn)
+        const salesperson_id = btn.dataset.id;
+        console.log(e)
+        console.log(salesperson_id)
+
+        fetch('http://localhost:8080/salespersons/lock_unlock/' + salesperson_id, {
+            method: 'POST'
+        })
+            .then(res => res.json())
+            .then(json => {
+                if(json.code === 1) {
+                    window.location.reload();
+                    // console.log(json.message)
+                }
+                else {
+                    console.log(json.message)
+                }
+            })
+    })
+
+
+</script>
+</body>
+</html>

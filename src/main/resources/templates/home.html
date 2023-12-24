@@ -196,7 +196,7 @@
                             </tr>
                         </thead>
 <!--                        <% if(!user.first_login || user.isAdmin) { %>-->
-                        <tbody th:if="${user.isAdmin()}">
+                        <tbody th:if="${user.isAdmin() || !user.isFirstLogin()}">
 <!--                            <% let i = 1 %>-->
 <!--                                <% top5_products.forEach(p => { %>-->
                                     <tr th:each="product : ${top5Products}">

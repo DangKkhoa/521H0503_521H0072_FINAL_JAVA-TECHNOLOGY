@@ -1,24 +1,27 @@
 package com.dkkhoa.possystem.controller;
 
+import com.dkkhoa.possystem.model.saledetail.SaleDetail;
 import com.dkkhoa.possystem.model.saledetail.SaleDetailRepository;
+import com.dkkhoa.possystem.model.sales.Sale;
 import com.dkkhoa.possystem.model.sales.SaleRepository;
 import com.dkkhoa.possystem.model.users.SessionUser;
 import com.dkkhoa.possystem.model.users.User;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/sale_history")
 public class SaleController {
 
     @Autowired
@@ -28,41 +31,53 @@ public class SaleController {
     SaleRepository saleRepo;
 
 
-    @GetMapping("/sale_history")
-    @ResponseBody
-    public String sale_history(HttpSession session) {
+    @GetMapping("")
+//    @ResponseBody
+    public String sale_history(HttpSession session, HttpServletResponse response, Model model) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
         SessionUser user = (SessionUser) session.getAttribute("user");
-        List<Object[]> allMonthProfit = saledetailRepo.getAllMonthProfit();
-//        for (Object[] profitEachMonth: allMonthProfit) {
-//            int month = (Integer) profitEachMonth[0];
-//            long totalProfit = (Long) profitEachMonth[1];
-//            System.out.println("Month: " + month + " - " + "Profit: " + totalProfit);
-//
-//        }
 
-//        List<Map<String, Object>> processedProfitEveryMonth = allMonthProfit.stream()
-//                .map(row -> {
-//                    Map<String, Object> newMap = new LinkedHashMap<>();
-//                    newMap.put("month", row[0]);
-//                    newMap.put("profit", row[1]);
-//                    return newMap;
-//                })
-//                .collect(Collectors.toList());
-        List<Object[]> allMonthreveue = saleRepo.getMonthlyRevenueByUserId(user.getId());
-        for (Object[] revenueEachMonth: allMonthreveue) {
-            int month = (Integer) revenueEachMonth[0];
-            long totalRevenue = (Long) revenueEachMonth[1];
-            System.out.println("Month: " + month + " - " + "Revenue: " + totalRevenue);
-
+        if(user == null) {
+            return "redirect:/login";
         }
 
-//        System.out.println(processedProfitEveryMonth);
-        System.out.println();
-        return "salehistory";
+        if(user.isFirstLogin() && !user.isAdmin()) {
+            return "redirect:/set_password";
+        }
+
+        int totalQuantity;
+        int totalRevenue;
+        long totalOrder;
+        Iterable<Sale> sales;
+
+        if(!user.isAdmin()) {
+            sales = saleRepo.getSaleByUserId(user.getId());
+            System.out.println(sales.toString());
+            totalQuantity = saleRepo.getTotalQuantityByUserId(user.getId());
+            totalRevenue = saleRepo.getTotalRevenueByUserId(user.getId());
+            totalOrder = saleRepo.countSaleByUserId(user.getId());
+        }
+        else {
+            sales = saleRepo.findAll();
+            totalQuantity = saleRepo.getTotalQuantity();
+            totalRevenue = saleRepo.getTotalRevenue();
+            totalOrder = saleRepo.count();
+        }
+
+        model.addAttribute("sales", sales);
+        model.addAttribute("totalQuantity", totalQuantity);
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("totalOrder", totalOrder);
+        model.addAttribute("user", user);
+
+        return "saleHistory";
     }
 
 //    @CrossOrigin
-    @PostMapping("/sale_history/data")
+    @PostMapping("/data")
     @ResponseBody
     public Map<String, Object> send_data(HttpSession session) {
         SessionUser user = (SessionUser) session.getAttribute("user");
@@ -102,6 +117,27 @@ public class SaleController {
         dataSent.put("role", user.isAdmin());
         dataSent.put("sales", monthlyRevenueObject);
         return dataSent;
+    }
+
+    @GetMapping("/detail")
+    private String saleDetail(@RequestParam("sale_id") String saleId, Model model, HttpSession sesison) {
+        if(sesison.getAttribute("user") == null) {
+            return "redirect:/login";
+        }
+
+        if(saleId == null || saleId.isEmpty()) {
+            return "redirect:/sale_history";
+        }
+//        System.out.println(saleId);
+
+        Iterable<SaleDetail> saleDetails = saledetailRepo.getAllBySale_SaleId(saleId);
+
+        Sale sale = saleRepo.findSaleBySaleId(saleId);
+        model.addAttribute("saleDetails", saleDetails);
+        model.addAttribute("sale", sale);
+        System.out.println(saleDetails.toString());
+
+        return "saleDetail";
     }
 
 }

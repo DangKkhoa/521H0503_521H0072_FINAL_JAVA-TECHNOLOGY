@@ -6,6 +6,7 @@ import com.dkkhoa.possystem.model.users.User;
 import com.dkkhoa.possystem.model.users.UserRepository;
 import com.dkkhoa.possystem.model.customers.CustomerRepository;
 import com.dkkhoa.possystem.model.sales.SaleRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -31,7 +32,11 @@ public class HomeController {
 
     @GetMapping("/")
 //    @ResponseBody
-    public String homePage(Model model, HttpSession session) {
+    public String homePage(Model model, HttpSession session, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+
         SessionUser user = (SessionUser) session.getAttribute("user");
 
         if(user == null ) {

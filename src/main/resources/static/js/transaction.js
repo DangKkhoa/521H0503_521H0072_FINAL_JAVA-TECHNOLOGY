@@ -104,8 +104,6 @@ document.addEventListener('DOMContentLoaded',  () => {
                     localStorage.clear()
                 }
 
-
-
                 updateSelectedProducts()
 
             })
@@ -196,13 +194,11 @@ document.addEventListener('DOMContentLoaded',  () => {
         const hour = date.getHours()
         const formatedHour = hour.toString().padStart(2, '0')
         console.log(formatedHour)
-        // console.log("hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
         const minute = date.getMinutes()
         const formatedMinute = minute.toString().padStart(2, '0')
         const second = date.getSeconds()
         const formatedSecond = second.toString().padStart(2, '0')
         const order_date = `${year}-${formatedMonth}-${formatedDay}`
-        // console.log("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO")
         console.log(order_date)
         const order_time = `${formatedHour}:${formatedMinute}:${formatedSecond}`
         var saleData = {
@@ -235,23 +231,12 @@ document.addEventListener('DOMContentLoaded',  () => {
                 else {
                     console.log(data.message)
                     alert(data.message)
-                    console.log('Something went wrong');
+                    window.location.href = 'http://localhost:8080/transaction/processing?complete=false'
+
+
                 }
             })
             .catch(error => console.log(error))
-
-
-
-        // Trigger the payment completion logic
-
-        // if(selected_products.size === 0) {
-        //     alert('No product selected')
-        // }
-        // else {
-        //     completePayment()
-        //     // window.location.href='/transaction/status'
-
-        // }
 
 
     });
