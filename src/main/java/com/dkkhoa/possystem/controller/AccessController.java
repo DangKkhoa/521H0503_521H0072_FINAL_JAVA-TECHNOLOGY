@@ -33,12 +33,13 @@ public class AccessController {
 
     @GetMapping("/login")
     private String login(HttpSession session) {
-        System.out.println("hello");
+
         SessionUser user = (SessionUser) session.getAttribute("user");
 
         if(user != null) {
-            return "redirect:/";
+            return "redirect:/home";
         }
+
         return "login";
     }
 
@@ -46,19 +47,13 @@ public class AccessController {
 //    @ResponseBody
     private String login_auth(@RequestParam String username, @RequestParam String password, Model model, HttpSession session) {
         User authenticatingUser = userRepo.findByUsername(username);
-//        int id = authenticatingUser.getUserId();
-//        String storedusername = authenticatingUser.getUsername();
-//        System.out.println(id + " " + storedusername);
-
-//        System.out.println(username);
-//        System.out.println(authenticatingUser);
         if(authenticatingUser != null && !authenticatingUser.isLocked()) {
             if(authenticatingUser.getToken() != null && !authenticatingUser.isAdmin()) {
                 model.addAttribute("error", "YOU MUST LOGIN VIA THE LINK THAT WAS SENT TO YOUR EMAIL");
                 return "error";
             }
             String passwordHashed = passwordEncoder.encode(password);
-            System.out.println(passwordHashed);
+//            System.out.println(passwordHashed);
             if (passwordEncoder.matches(password, authenticatingUser.getPassword())) {
                 SessionUser sessionUser = new SessionUser();
                 sessionUser.setId(authenticatingUser.getUserId());
@@ -69,20 +64,15 @@ public class AccessController {
                 sessionUser.setEmail(authenticatingUser.getEmail());
                 sessionUser.setPhoneNumber(authenticatingUser.getPhone());
 
-
-//                sessionUser.setFirstLogin(authenticatingUser.isFirstLogin());
-                System.out.println("Toi day roi ne");
-                System.out.println(sessionUser);
-                System.out.println("Toi day luon r");
                 session.setAttribute("user", sessionUser);
                 if(authenticatingUser.isFirstLogin() && !authenticatingUser.isAdmin()) {
                     return "redirect:/set_password";
                 }
-                return "redirect:/";
+                return "redirect:/home";
             }
             else {
                 model.addAttribute("username", username);
-                model.addAttribute("error", "Wrong username or password");
+                model.addAttribute("error", "Wrong password");
                 return "login";
             }
 
@@ -93,27 +83,7 @@ public class AccessController {
         return "login";
     }
 
-//    @GetMapping("/login_succeed")
-//    @ResponseBody
-//    public String succeed(HttpServletRequest request) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        System.out.println(authentication.toString());
-//        User loginUser = userRepo.findByUsername(authentication.getName());
-//        System.out.println(loginUser);
-//        System.out.println(authentication.getName());
-////        System.out.println(authentication.getAuthorities());
-//        String role = authentication.getAuthorities().toString();
-//        System.out.println(role.equals("[ROLE_Admin]"));
-////        System.out.println(authentication.toString());
-//        System.out.println(authentication.getDetails());
-//        HttpSession session = request.getSession();
-//        session.setAttribute("username", loginUser.getUsername());
-//        session.setAttribute("fn", loginUser.getFullname());
-//        session.setAttribute("profilePicture", loginUser.getProfilePicture());
-//        session.setAttribute("firstLogin", loginUser.isFirstLogin());
-//        session.setAttribute("role", role);
-//        return "redirect:/";
-//    }
+
     @GetMapping("/logout")
     private String logout(HttpSession session, HttpServletResponse response) {
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -131,9 +101,12 @@ public class AccessController {
 
     @GetMapping("/first_login")
 //    @ResponseBody
-    private String firstLogin(@RequestParam(name = "token") String token, Model model) {
+    private String firstLogin(@RequestParam(name = "token") String token, Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         boolean isValid = jwtUtil.validateToken(token);
-        System.out.println(isValid);
+//        System.out.println(isValid);
 
         if(isValid) {
             return "firstLogin";
@@ -147,6 +120,7 @@ public class AccessController {
     private String handleFirstLogin(@RequestParam(name = "username", required = true) String username, @RequestParam(name = "password", required = true) String password, HttpSession session, Model model) {
         User authenticatingUser = userRepo.findByUsername(username);
 
+//        System.out.println(authenticatingUser);
         if(authenticatingUser != null) {
             if (passwordEncoder.matches(password, authenticatingUser.getPassword())) {
                 SessionUser sessionUser = new SessionUser();
@@ -156,6 +130,7 @@ public class AccessController {
                 sessionUser.setAdmin(authenticatingUser.isAdmin());
                 sessionUser.setProfilePicture(authenticatingUser.getProfilePicture());
                 sessionUser.setEmail(authenticatingUser.getEmail());
+                sessionUser.setFirstLogin(authenticatingUser.isFirstLogin());
 
 
 //                sessionUser.setFirstLogin(authenticatingUser.isFirstLogin());
@@ -163,7 +138,7 @@ public class AccessController {
                 if(!authenticatingUser.isAdmin()) {
                     return "redirect:/set_password";
                 }
-                return "redirect:/";
+                return "redirect:/home";
             }
             else {
                 model.addAttribute("username", username);
@@ -180,12 +155,16 @@ public class AccessController {
 
 
     @GetMapping("/set_password")
-    private String setPassword(HttpSession session) {
+    private String setPassword(HttpSession session, Model model) {
         SessionUser user = (SessionUser) session.getAttribute("user");
 
         if(user == null) {
             return "redirect:/login";
         }
+
+        boolean isFirstLogin = user.isFirstLogin();
+        model.addAttribute("isFirstLogin", isFirstLogin);
+        model.addAttribute("isAdmin", user.isAdmin());
 
         return "setPassword";
 
@@ -193,22 +172,28 @@ public class AccessController {
 
     @PostMapping("/set_password")
     private String handleSetPassword(@RequestParam(name = "currentPassword") String currentPassword, @RequestParam(name = "newPassword") String newPassword, Model model, HttpSession session) {
+        SessionUser userSession = (SessionUser) session.getAttribute("user");
+        User userDb = userRepo.getUserByUserId(userSession.getId());
         try {
-            SessionUser userSession = (SessionUser) session.getAttribute("user");
-            User userDb = userRepo.getUserByUserId(userSession.getId());
-            System.out.println("Current pass: " + currentPassword + " - New password: " + newPassword);
+//            System.out.println("Current pass: " + currentPassword + " - New password: " + newPassword);
             boolean isMatched = passwordEncoder.matches(currentPassword, userDb.getPassword());
             if(!isMatched) {
                 model.addAttribute("error", "Incorrect password. Please try again");
+                model.addAttribute("isFirstLogin", userSession.isFirstLogin());
+                model.addAttribute("isAdmin", userSession.isAdmin());
                 return "setPassword";
 
             }
             if(newPassword.equals(currentPassword)) {
                 model.addAttribute("error", "New password must be different from the current password");
+                model.addAttribute("isFirstLogin", userSession.isFirstLogin());
+                model.addAttribute("isAdmin", userSession.isAdmin());
                 return "setPassword";
             }
             if(newPassword.length() < 10) {
                 model.addAttribute("error", "New password must contain at least 10 characters");
+                model.addAttribute("isFirstLogin", userSession.isFirstLogin());
+                model.addAttribute("isAdmin", userSession.isAdmin());
                 return "setPassword";
             }
 
@@ -216,11 +201,14 @@ public class AccessController {
             userDb.setPassword(password);
             userDb.setFirstLogin(false);
             userDb.setToken(null);
+            userSession.setFirstLogin(false);
             userRepo.save(userDb);
             return "redirect:/";
         }
         catch (Exception e) {
             System.out.println("Error occured while setting new password: " + e);
+            model.addAttribute("isFirstLogin", userSession.isFirstLogin());
+            model.addAttribute("isAdmin", userSession.isAdmin());
             return "setPassword";
         }
 

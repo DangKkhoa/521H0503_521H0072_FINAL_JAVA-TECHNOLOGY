@@ -51,6 +51,10 @@ public class TransactionController {
             return "redirect:/login";
         }
 
+        if(user.isFirstLogin() && !user.isAdmin()) {
+            return "redirect:/set_password";
+        }
+
         if(saleId == null) {
             saleId = iDGenerator();
         }
@@ -79,28 +83,32 @@ public class TransactionController {
         int totalQuantity = Integer.parseInt(saleData.get("total_quantity").toString());
         int totalPrice =Integer.parseInt(saleData.get("total_cost").toString());
 
-        boolean isAdded = saleService.addSale(saleId, totalQuantity, totalPrice, amountGivenByCustomer, changeToCustomer, user.getId(), null, saleDate, saleTime);
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
+        boolean isAdded = saleService.addSale(saleId, totalQuantity, totalPrice, amountGivenByCustomer, changeToCustomer, user.getId(), null, saleDate, saleTime);
         if(isAdded) {
             products_selected.forEach(p -> {
                 System.out.println(p);
                 ProductSelected productSelectedDetail = saledetailService.format(p);
-                saledetailService.saledetailAdd(productSelectedDetail, saleId);
+                boolean isAddedSaleDetail = saledetailService.saledetailAdd(productSelectedDetail, saleId);
             });
-
             response.put("code", 1);
             response.put("message", "Transaction stored successfully");
             saleId = null;
             return response;
         }
+
         response.put("code", 0);
         response.put("message", "Error occured. Please try again later");
         saleId = null;
         return response;
+
     }
 
     @GetMapping("/processing")
-    private String trasactionStautus(HttpSession session, @RequestParam(name = "complete", defaultValue = "false") boolean complete, Model model) {
+    private String trasactionStautus(HttpSession session, @RequestParam(name = "complete", defaultValue = "false") boolean complete, Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         if(session.getAttribute("user") == null) {
             return "redirect:/";
         }
@@ -110,8 +118,11 @@ public class TransactionController {
     }
 
     @GetMapping("/products/{category_name}")
-    private String categorySearch(@PathVariable("category_name") String category_name, HttpSession session, Model model) {
+    private String categorySearch(@PathVariable("category_name") String category_name, HttpSession session, Model model, HttpServletResponse response) {
 //        System.out.println(name);
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         SessionUser user = (SessionUser) session.getAttribute("user");
         if(user == null) {
             return "redirect:/login";
@@ -129,8 +140,10 @@ public class TransactionController {
     }
 
     @GetMapping("/search")
-    private String search(@RequestParam(name = "product_name", required = false) String name, HttpSession session, Model model) {
-        System.out.println(name);
+    private String search(@RequestParam(name = "product_name", required = false) String name, HttpSession session, Model model, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
         SessionUser user = (SessionUser) session.getAttribute("user");
         if(user == null) {
             return "redirect:/login";
@@ -144,8 +157,4 @@ public class TransactionController {
         return "transaction";
 
     }
-
-
-
-
 }

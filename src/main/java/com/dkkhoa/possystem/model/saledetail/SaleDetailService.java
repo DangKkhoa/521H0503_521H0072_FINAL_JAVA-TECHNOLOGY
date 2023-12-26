@@ -3,6 +3,7 @@ package com.dkkhoa.possystem.model.saledetail;
 import com.dkkhoa.possystem.model.products.Product;
 import com.dkkhoa.possystem.model.products.ProductRepository;
 import com.dkkhoa.possystem.model.products.ProductSelected;
+import com.dkkhoa.possystem.model.products.ProductService;
 import com.dkkhoa.possystem.model.sales.Sale;
 import com.dkkhoa.possystem.model.sales.SaleRepository;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,9 @@ public class SaleDetailService {
     @Autowired
     private SaleRepository saleRepo;
 
+    @Autowired
+    private ProductService productService;
+
     public ProductSelected format(Map<String, Object> data) {
         int id = Integer.parseInt(data.get("id").toString()) ;
         String name = data.get("name").toString();
@@ -33,19 +37,25 @@ public class SaleDetailService {
         return new ProductSelected(id, name, price, quantity);
     }
 
-    public SaleDetail saledetailAdd(ProductSelected product, String saleId) {
+    public boolean saledetailAdd(ProductSelected product, String saleId) {
         try {
+            Product selectedProduct = productRepo.findProductByProductId(product.getId());
+            int quantityInStock = selectedProduct.getQuantityInStock();
+            if(quantityInStock < product.getQuantity()) {
+                return false;
+            }
             SaleDetail detail = new SaleDetail();
             detail.setQuantity(product.getQuantity());
             detail.setUnitPrice(product.getPrice());
             detail.setSale(saleRepo.findSaleBySaleId(saleId));
             detail.setProduct(productRepo.findProductByProductId(product.getId()));
             saledetailRepo.save(detail);
-            return detail;
+            productService.updateQuantityInStock(product.getId(), product.getQuantity());
+            return true;
         }
         catch (Exception e) {
             System.out.println("Error occured while adding sale detail to db: " + e);
-            return null;
+            return false;
         }
     }
 }

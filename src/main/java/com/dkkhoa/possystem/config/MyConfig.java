@@ -24,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.WebRequestHandlerInterceptorAdapter;
 
@@ -32,7 +33,7 @@ import java.util.Properties;
 
 @Configuration
 //@EnableWebSecurity
-public class MyConfig {
+public class MyConfig implements WebMvcConfigurer{
 
 
 
@@ -54,6 +55,11 @@ public class MyConfig {
 
             }
         };
+    }
+
+    @Override
+    public void addResourceHandlers(final ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/upload/**").addResourceLocations("file:src/main/upload/");
     }
 
     @Bean

@@ -11,6 +11,36 @@ document.addEventListener('DOMContentLoaded',  () => {
     let change_value = 0
     let customer_pay_value = 0
 
+    function randomDate() {
+
+    }
+    const date = new Date()
+    // Today date
+    // const day = date.getDate()
+    // const month = date.getMonth() + 1
+
+    // Random date
+    const day = Math.floor(Math.random() * 27) + 1
+    const month = Math.floor(Math.random() * 11) + 1
+    const year = date.getFullYear()
+
+    const formatedDay = day.toString().padStart(2, '0')
+    const formatedMonth = month.toString().padStart(2, '0')
+
+    const hour = date.getHours()
+    const formatedHour = hour.toString().padStart(2, '0')
+    const minute = date.getMinutes()
+    const formatedMinute = minute.toString().padStart(2, '0')
+    const second = date.getSeconds()
+    const formatedSecond = second.toString().padStart(2, '0')
+
+    const display_date = `${formatedDay}-${formatedMonth}-${year}`
+    const display_time = `${formatedHour}:${formatedMinute}:${formatedSecond}`
+
+    // Set the current date and time when the page loads
+    const dateInput = document.getElementById('dateInput')
+    dateInput.value = `${display_date}, ${display_time}`
+
     customer_pay.addEventListener('keyup', () => {
         const total_cost = parseInt(document.getElementById('total-cost').textContent)
         customer_pay_value = parseInt(document.getElementById('customerPay').value)
@@ -33,7 +63,7 @@ document.addEventListener('DOMContentLoaded',  () => {
     // Select product
     product_items.forEach(item => {
         item.addEventListener('click', () => {
-            const productId = item.dataset.id;
+            const productId = item.dataset.id
             const productName = item.dataset.name
             const productPrice = item.dataset.price
 
@@ -70,7 +100,7 @@ document.addEventListener('DOMContentLoaded',  () => {
         // Save the selected products to localStorage
         localStorage.setItem('selected_products', JSON.stringify(Array.from(selected_products.entries())))
 
-        updateSelectedProducts();
+        updateSelectedProducts()
     }
 
 
@@ -180,26 +210,7 @@ document.addEventListener('DOMContentLoaded',  () => {
         const selected_data = Array.from(selected_products.entries())
 
         console.log(selected_products)
-        const date = new Date()
-
-        // const day = date.getDate()
-        const day = Math.floor(Math.random() * 27) + 1
-        console.log(day)
-        const formatedDay = day.toString().padStart(2, '0')
-        // const month = date.getMonth()  // because in js, month from (0, 11)
-        const month = Math.floor(Math.random() * 11) + 1
-        const formatedMonth = month.toString().padStart(2, '0')
-        const year = date.getFullYear()
-
-        const hour = date.getHours()
-        const formatedHour = hour.toString().padStart(2, '0')
-        console.log(formatedHour)
-        const minute = date.getMinutes()
-        const formatedMinute = minute.toString().padStart(2, '0')
-        const second = date.getSeconds()
-        const formatedSecond = second.toString().padStart(2, '0')
         const order_date = `${year}-${formatedMonth}-${formatedDay}`
-        console.log(order_date)
         const order_time = `${formatedHour}:${formatedMinute}:${formatedSecond}`
         var saleData = {
             products: sent_selected_data,

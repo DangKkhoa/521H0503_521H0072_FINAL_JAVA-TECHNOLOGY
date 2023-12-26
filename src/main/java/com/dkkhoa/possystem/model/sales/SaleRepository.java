@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,27 @@ public interface SaleRepository extends CrudRepository<Sale, Integer> {
     @Query("SELECT s FROM Sale s WHERE s.user.userId = :userId ORDER BY s.saleDate")
     Iterable<Sale> getSaleByUserId(@Param("userId") int userId);
 
+    List<Sale> findBySaleDateBetween(LocalDate start_date, LocalDate end_date);
 
+    @Query("SELECT s FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate AND s.user.userId = :userId")
+    List<Sale> findSaleBySaleDateBetweenAndUserId(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("userId") int userId);
+
+    @Query("SELECT COALESCE(SUM(s.totalPrice), 0) FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate")
+    int getTotalRevenueBySaleDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT COALESCE(SUM(s.totalQuantity), 0) FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate")
+    int getTotalQuantityBySaleDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+
+    long countBySaleDateBetween(LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT COALESCE(SUM(s.totalPrice), 0) FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate AND s.user.userId = :userId")
+    int getTotalRevenueByUserIdAndSaleDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("userId") int userId);
+
+    @Query("SELECT COALESCE(SUM(s.totalQuantity), 0) FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate AND s.user.userId = :userId")
+    int getTotalQuantityByUserIdAndSaleDateBetween(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("userId") int userId);
+    @Query(" SELECT COALESCE(SUM(s.totalPrice), 0) FROM Sale s WHERE s.saleDate BETWEEN :startDate AND :endDate AND s.user.userId = :userId")
+    long countByUserIdAndSaleDateBetwen(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("userId") int userId);
 
 
 

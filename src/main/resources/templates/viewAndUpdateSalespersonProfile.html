@@ -7,7 +7,7 @@
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
 
-    <title>User Profile</title>
+    <title>Salesperson Profile</title>
     <style>
 
         body {
@@ -49,14 +49,14 @@
 
         <div class="card-body" id="success-box" th:if="${success}">
             <div class="alert alert-success" role="alert">
-                Profile updated successfully!
+                Salesperson profile updated successfully!
             </div>
         </div>
         <div class="card-body">
             <div class="row">
-                <form action="/profile" method="post" enctype="multipart/form-data" class="mt-4">
+                <form th:action="'/profile/salesperson/' + ${salesperson.getUserId()}" method="post" enctype="multipart/form-data" class="mt-4">
                     <div class="picture-profile" style="width: 150px; height: 150px; border-radius: 50%; margin: 0 auto 10px auto; border: 2px solid black">
-                        <img th:src="'/upload/profile/' + ${user.getProfilePicture()}"  alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%;">
+                        <img th:src="'/upload/profile/' + ${salesperson.getProfilePicture()}"  alt="User Avatar" style="width: 100%; height: 100%; border-radius: 50%;">
                     </div>
                     <div class="form-group">
                         <label for="profile_picture">Update Avatar:</label>
@@ -64,24 +64,24 @@
                     </div>
                     <div class="form-group">
                         <label for="fullname">Full Name:</label>
-                        <input type="text" id="fullname" name="fullname" class="form-control" th:value="${user.getSessionFullname()}" required>
+                        <input type="text" id="fullname" name="fullname" class="form-control" th:value="${salesperson.getFullname()}" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" class="form-control" th:value="${user.getEmail()}" required>
+                        <input type="email" id="email" name="email" class="form-control" th:value="${salesperson.getEmail()}" required>
                     </div>
                     <div class="form-group">
                         <label for="username">Username:</label>
-                        <input type="username" id="username" name="username" class="form-control" th:value="${user.getUsername()}" required>
+                        <input type="username" id="username" name="username" class="form-control" th:value="${salesperson.getUsername()}" required>
                     </div>
 
                     <div class="form-group">
                         <label for="phone">Phone:</label>
-                        <input type="tel" id="phone" name="phone" class="form-control" th:value="${user.getPhoneNumber()}" pattern="[0-9]{10}">
+                        <input type="tel" id="phone" name="phone" class="form-control" th:value="${salesperson.getPhone()}" pattern="[0-9]{10}">
                     </div>
 
 
-                    <button type="submit" class="btn btn-primary button-spacing">Update</button>
+                    <button type="submit" class="btn btn-primary button-spacing">Update Salesperson</button>
 
                     <a href="/" class="btn btn-secondary button-home">Home</a>
                 </form>
@@ -96,16 +96,10 @@
 
     let sec = 1
     const interval = setInterval(function() {
-        if(window.location.href === '/profile') {
-            clearInterval(interval)
-            return;
-        }
         sec--
-
         if(sec < 0) {
             clearInterval(interval)
             success_box.style.display = 'none'
-            window.location.href = '/profile'
         }
     }, 1000)
 </script>

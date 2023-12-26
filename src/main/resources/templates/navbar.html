@@ -14,11 +14,11 @@
 <div class="myNavbar" id="sidebar">
   <button onclick="closeNav()"><i class="fa-solid fa-xmark"></i> Close</button>
   <div class="user_profile" style="">
-    <a th:href="@{/profile(user_id=${user.getId()})}"><img src="/images/profile/<%= user.profile_picture %>" alt=""><span style="margin-left: 5px;" th:text="${user.getUsername()}"></span></a>
+    <a th:href="@{/profile}"><img th:src="'/upload/profile/' + ${user.getProfilePicture()}" alt=""><span style="margin-left: 5px;" th:text="${user.getUsername()}"></span></a>
   </div>
-  <hr style="width: 80%; margin: auto;">
+  <hr style="width: 80%; margin: auto; color: white">
   <div class="nav-menu">
-    <a href="/" class="url"><i class="fa-solid fa-house"></i> Home</a>
+    <a href="/home" class="url"><i class="fa-solid fa-house"></i> Home</a>
     <a href="/transaction" class="product-management url"><i class="fa-solid fa-cart-plus"></i> New Transaction</a>
     <div th:if="${user.isAdmin()}">
     <a class="url" href="/salespersons"><i class="fa-solid fa-users"></i> Salespersons</a>
@@ -27,6 +27,7 @@
     <a href="/products" class="product-management url"><i class="fa-solid fa-bag-shopping"></i> Products</a>
     <a class="url" href="/sale_history"><i class="fa-solid fa-clock-rotate-left"></i> Sale History</a>
     <div class="link-container">
+      <a href="/set_password"><i class="fa-solid fa-pencil"></i> Change password</a>
       <a href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Log out</a>
     </div>
   </div>
@@ -56,11 +57,11 @@
 
   Array.from(x).forEach(u => {
     const current_url = u.getAttribute('href')
+    const is_current_page = window.location.pathname.startsWith(current_url)
 
     console.log(current_url)
-    if(current_url === window.location.pathname) {
+    if(is_current_page) {
       u.classList.add('active')
-
     }
     else {
       u.classList.remove('active')

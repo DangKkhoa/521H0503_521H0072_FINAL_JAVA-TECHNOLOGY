@@ -66,7 +66,7 @@
                 <th>Total price</th>
                 <th>Customer paid</th>
                 <th>Change</th>
-                <th>Sold by</th>
+                <th th:if="${user.isAdmin()}">Sold by</th>
                 <th>Date</th>
                 <th>Time</th>
             </tr>
@@ -81,7 +81,7 @@
                 <td th:text="${sale.getTotalPrice()}"></td>
                 <td th:text="${sale.getAmountGivenByCustomer()}"></td>
                 <td th:text="${sale.getChangeToCustomer()}"></td>
-                <td th:text="${sale.getUser().getFullname()}"></td>
+                <td th:if="${user.isAdmin()}" th:text="${sale.getUser().getFullname()}"></td>
                 <td th:text="${#temporals.format(sale.getSaleDate(), 'dd-MM-yyyy')}"></td>
                 <td th:text="${sale.getSaleTime()}"></td>
             </tr>

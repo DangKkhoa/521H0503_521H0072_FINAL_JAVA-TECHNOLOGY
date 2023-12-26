@@ -60,17 +60,7 @@ public class SalespersonController {
 
     @PostMapping("/add")
     private String addSalesperson(@RequestParam(name = "fullname") String fullname, @RequestParam(name = "email") String email, Model model, HttpSession session) {
-        System.out.println("Fullname: " + fullname + " - Email: " + email);
-
-//        SessionUser user = (SessionUser) session.getAttribute("user");
-//        String userEmail = user.getEmail();
-//        System.out.println(userEmail);
-
-
         boolean isAdded = userService.addSalesperson(fullname, email);
-
-
-
         return "redirect:/salespersons";
     }
 
@@ -112,7 +102,7 @@ public class SalespersonController {
         String subject = "YOUR ACCOUNT HAS BEEN CREATED";
         String body = "<p style=\"font-size: 14px\"><strong>Username:</strong> " + username + "</p>" +
                 "<p style=\"font-size: 14px\"><strong>Password:</strong> " + username + "</p>" +
-                "<h2 style=\"font-style:italic\"><span style=\"color: red\">Note:</span> You will be asked to change your password when logging in for the first time !</h2>" +
+                "<h3 style=\"font-style:italic\"><span style=\"color: red\">Note:</span> The link is valid for only 1 minute. After this time, please contact the admin for a new link !</h3>" +
                 "<a href=\"" + loginLink + "\">" + loginLink + "</a>";
 
         boolean isSent = emailService.sendEmail(email, subject, body);

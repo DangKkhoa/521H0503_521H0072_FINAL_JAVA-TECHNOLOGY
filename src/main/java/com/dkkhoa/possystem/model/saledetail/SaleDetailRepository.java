@@ -25,4 +25,6 @@ public interface SaleDetailRepository extends CrudRepository<SaleDetail, Long> {
 //    @Query("SELECT sd FROM SaleDetail sd WHERE sd.sale.saleId = :saleId")
     Iterable<SaleDetail> getAllBySale_SaleId(String saleId);
 
+    int countByProduct_ProductId(int productId);
+
 }

@@ -27,7 +27,7 @@
 </head>
 <body>
 <div class="container mt-5">
-    <h1 class="mb-4 text-center"><i class="fa-solid fa-right-to-bracket"></i>Welcome, new salesperson</h1>
+    <h3 class="mb-4 text-center">Welcome, new salesperson</h3>
     <form id="loginForm" method="POST" action="/first_login">
         <div class="form-group">
             <label for="username">Username:</label>
@@ -42,7 +42,7 @@
         </div>
 
         <div th:if="${error}">
-            <div th:text="${error}" class="alert alert-danger" role="alert"></div>
+            <div th:text="${error}" class="alert alert-danger text-center" role="alert"></div>
         </div>
         <button type="submit" class="btn btn-primary btn-block">Login</button>
     </form>
