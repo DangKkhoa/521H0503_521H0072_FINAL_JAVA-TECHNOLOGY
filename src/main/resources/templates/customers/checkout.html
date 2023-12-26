@@ -1,0 +1,14 @@
+
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/checkout.css">
+</head>
+<div class="notification">
+    Please enter the customer's phone number.
+</div>
+<form th:action="@{/customers/checkout}" th:object="${customer}" method="post">
+    <label for="phone">Phone:</label>
+    <input type="text" id="phone" th:field="*{phoneNumber}" required>
+
+
+    <button type="submit">Check</button>
+</form>

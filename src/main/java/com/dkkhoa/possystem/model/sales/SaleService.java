@@ -2,7 +2,6 @@ package com.dkkhoa.possystem.model.sales;
 
 import com.dkkhoa.possystem.model.customers.Customer;
 import com.dkkhoa.possystem.model.customers.CustomerRepository;
-import com.dkkhoa.possystem.model.products.ProductSelected;
 import com.dkkhoa.possystem.model.saledetail.SaleDetailService;
 import com.dkkhoa.possystem.model.users.User;
 import com.dkkhoa.possystem.model.users.UserRepository;
@@ -11,10 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class SaleService {
@@ -36,7 +34,7 @@ public class SaleService {
         try {
 
             User user = userRepo.getUserByUserId(userId);
-            Customer customer = customerRepo.getCustomerByPhoneNumber(phoneNumber);
+            Customer customer = customerRepo.findByPhoneNumber(phoneNumber);
 
             Sale newSale = new Sale();
             newSale.setSaleId(saleId);

@@ -1,0 +1,15 @@
+<!-- checkout.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/result.css">
+</head>
+<body>
+<div class="container">
+    <div class="message success">Customer already exists</div>
+
+    <!-- Display all data in h2 horizontally -->
+    <h2 th:text="'Name: ' + ${customer.fullname + ' | Phone: ' + customer.phoneNumber + ' | Address: ' + customer.address}"></h2>
+</div>
+</body>
+</html>

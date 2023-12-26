@@ -24,6 +24,8 @@ CREATE TABLE `customers` (
                              UNIQUE(`phone_number`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
+INSERT INTO `customers`(`id`, `phone_number`, `fullname`, `address`) VALUES (2,'0123456789','Customer','123');
+
 CREATE TABLE `sales` (
                          `sale_id` varchar(20) PRIMARY KEY,
                          `total_quantity` int NOT NULL,
@@ -60,6 +62,17 @@ CREATE TABLE `sale_details` (
                                 FOREIGN KEY (`sale_id`) REFERENCES `sales`(`sale_id`),
                                 FOREIGN KEY (`product_id`) REFERENCES `products`(`product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE purchase_history (
+                                 id INT PRIMARY KEY AUTO_INCREMENT,
+                                 customer_id INT,
+                                 purchase_date DATETIME,
+                                 total_amount DECIMAL(10, 2),
+                                 amount_given DECIMAL(10, 2),
+                                 excess_amount_paid_back DECIMAL(10, 2),
+                                 product_quantity INT,
+                                 FOREIGN KEY (customer_id) REFERENCES `customers`(`id`)
+);
+INSERT INTO purchase_history(`id`, `customer_id`, `purchase_date`, `total_amount`, `amount_given`, `excess_amount_paid_back`, `product_quantity`) VALUES (1, 2,'2023-12-06','1','1','1','1');
 
 -- Password of admin is admin
 INSERT INTO `users`(`user_id`, `username`, `password`, `email`, `fullname`, `is_admin`, `is_locked`) VALUES (1,'admin','$2b$10$GUX7D4isxJFeqX8hy5eB2OvJbKlXlJG3QNjhMOFOhtZam1PyrlC2K','admin@gmail.com', 'Admin', true,false);

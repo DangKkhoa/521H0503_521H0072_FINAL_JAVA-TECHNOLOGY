@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Purchase History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style></head>
+<body>
+
+<h1 th:text="${customer.fullname} + ' Purchase History'"></h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Date of Purchase</th>
+        <th>Total Amount</th>
+        <th>Amount Given</th>
+        <th>Excess Amount Paid Back</th>
+        <th>Product Quantity</th>
+    </tr>
+    </thead>
+    <tbody th:if="${purchaseHistoryList != null and #lists.size(purchaseHistoryList) > 0}">
+    <tr th:each="history : ${purchaseHistoryList}">
+        <td th:text="${#dates.format(history.purchaseDate, 'dd/MM/yyyy')}"></td>
+        <td th:if="${history != null}" th:text="${history.totalAmount}"></td>
+        <td th:if="${history != null}" th:text="${history.amountGiven}"></td>
+        <td th:if="${history != null}" th:text="${history.excessAmountPaidBack}"></td>
+        <td th:if="${history != null}" th:text="${history.productQuantity}"></td>
+
+    </tr>
+    </tbody>
+
+</table>
+
+</body>
+</html>

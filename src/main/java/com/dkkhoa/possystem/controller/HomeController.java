@@ -1,10 +1,9 @@
 package com.dkkhoa.possystem.controller;
+import com.dkkhoa.possystem.model.customers.CustomerRepository;
 import com.dkkhoa.possystem.model.saledetail.SaleDetailRepository;
 import com.dkkhoa.possystem.model.saledetail.TopFiveProducts;
 import com.dkkhoa.possystem.model.users.SessionUser;
-import com.dkkhoa.possystem.model.users.User;
 import com.dkkhoa.possystem.model.users.UserRepository;
-import com.dkkhoa.possystem.model.customers.CustomerRepository;
 import com.dkkhoa.possystem.model.sales.SaleRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
